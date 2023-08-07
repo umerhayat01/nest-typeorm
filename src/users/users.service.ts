@@ -11,35 +11,37 @@ export class UsersService {
     @InjectRepository(User) private userRepository: Repository<User>,
   ) {}
 
-  create(createUserDto: CreateUserDto) {
+  create(createUserDto: CreateUserDto): Promise<User> {
     const newUser = this.userRepository.create(createUserDto);
     console.log('This action adds a new user');
     return this.userRepository.save(newUser);
   }
 
-  findAll() {
+  findAll(): Promise<User[]> {
     console.log(`This action returns all users`);
     return this.userRepository.find();
   }
 
-  findOne(id: number) {
-    console.log(`This action returns a #${id} user`);
-    return this.userRepository.findOneBy({ id });
+  findOne(id: number): Promise<User> {
+    try {
+      console.log(`This action returns a #${id} user`);
+      return this.userRepository.findOneBy({ id });
+    } catch (err) {
+      console.log('Error', err);
+      throw err;
+    }
   }
 
-  async update(id: number, updateUserDto: UpdateUserDto) {
+  async update(id: number, updateUserDto: UpdateUserDto): Promise<User> {
     const user = await this.findOne(id);
-
     return this.userRepository.save({ ...user, ...updateUserDto });
 
     //Alternative
     // return this.userRepository.update(id,updateUserDto)
   }
 
-  async remove(id: number) {
-    // return `This action removes a #${id} user`;
+  async remove(id: number): Promise<User> {
     const user = await this.findOne(id);
-
     return this.userRepository.remove(user);
 
     //Alternative
